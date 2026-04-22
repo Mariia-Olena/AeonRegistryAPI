@@ -2,3 +2,4 @@
 global using AeonRegistryAPI.Models;
 global using AeonRegistryAPI.Models.Response;
 global using AeonRegistryAPI.Data;
+global using AeonRegistryAPI.Middleware;
