@@ -6,10 +6,8 @@ namespace AeonRegistryAPI.Endpoints.Home
     {
         public static IEndpointRouteBuilder MapHomeEndpoints(this IEndpointRouteBuilder route)
         {
-            var homeGroup = route.MapGroup("/api/Home")
-                .WithTags("Home");
+            var homeGroup = route.MapGroup("/api/Home").WithTags("Home");
 
-            ///api/home/welcome
             homeGroup.MapGet("/welcome", GetWelcomeMessage)
                 .WithName("GetWelcomeMessage")
                 .WithSummary("Welcome Message")
@@ -19,7 +17,6 @@ namespace AeonRegistryAPI.Endpoints.Home
         }
 
         // Handlers
-
         private static async Task<Ok<WelcomeResponse>> GetWelcomeMessage(CancellationToken ct)
         {
             var welcomeMessage = new WelcomeResponse

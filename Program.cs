@@ -1,5 +1,8 @@
-using AeonRegistryAPI.Endpoints.Home;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+
+using AeonRegistryAPI.Endpoints.Home;
+using AeonRegistryAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,21 @@ var connectionString = DataUtility.GetConnectionString(builder.Configuration);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
+//Add identity endpoints
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+//Admin policy
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
+//Enable validation for minimal APIs
+builder.Services.AddValidation();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -25,7 +43,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 
+var authRoutGroup = app.MapGroup("api/auth").WithTags("Admin");
+authRoutGroup.MapIdentityApi<ApplicationUser>();
 app.MapHomeEndpoints();
 
 app.Run();
